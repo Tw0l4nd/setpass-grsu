@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Locale;
 
 @Controller
 public class RegistrationCaptchaController {
@@ -36,6 +37,11 @@ public class RegistrationCaptchaController {
     }
 
     // Registration
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String indexPage(final Locale locale) {
+        return "redirect:/registrationCaptcha.html?lang=" + locale.getLanguage();
+    }
+
 
     @RequestMapping(value = "/user/registrationCaptcha", method = RequestMethod.POST)
     @ResponseBody
@@ -43,6 +49,8 @@ public class RegistrationCaptchaController {
 
         final String response = request.getParameter("g-recaptcha-response");
         captchaService.processResponse(response);
+
+        accountDto.setUsing2FA(true);
 
         LOGGER.debug("Registering user account with information: {}", accountDto);
 

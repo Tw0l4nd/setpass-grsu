@@ -31,6 +31,9 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
 
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
+
+
+
         handle(request, response, authentication);
         final HttpSession session = request.getSession(false);
         if (session != null) {
@@ -67,7 +70,7 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         if (isUser) {
             return "/homepage.html?user=" + authentication.getName();
         } else if (isAdmin) {
-            return "/console.html";
+            return "/setPass.html";
         } else {
             throw new IllegalStateException();
         }

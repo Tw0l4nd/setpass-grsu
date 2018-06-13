@@ -9,10 +9,12 @@ public class CustomWebAuthenticationDetails extends WebAuthenticationDetails {
     private static final long serialVersionUID = 1L;
 
     private final String verificationCode;
+    private String loginPage = "-1";
 
     public CustomWebAuthenticationDetails(HttpServletRequest request) {
         super(request);
         verificationCode = request.getParameter("code");
+        loginPage = request.getParameter("loginPage");
     }
 
     public String getVerificationCode() {

@@ -79,10 +79,10 @@ public class RegistrationControllerIntegrationTest {
 
     @Test
     public void testRegistrationConfirm() throws Exception {
-        ResultActions resultActions = this.mockMvc.perform(get("/registrationConfirm.html?token=" + token));
+        ResultActions resultActions = this.mockMvc.perform(get("/loginConfirm.html?token=" + token));
         resultActions.andExpect(status().is3xxRedirection());
-        resultActions.andExpect(model().attribute("message", "Your account verified successfully"));
-        resultActions.andExpect(view().name("redirect:/console.html?lang=en"));
+        resultActions.andExpect(model().attribute("message", "Your account email verified successfully"));
+        resultActions.andExpect(view().name("redirect:/setPass.html?lang=en"));
     }
 
     @Test

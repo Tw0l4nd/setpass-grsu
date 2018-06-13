@@ -1,0 +1,201 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+</head>
+
+<script th:src="@{/resources/pwstrength.js}"></script>
+
+<body onload="enable2FA()">
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/home.html}" th:text="#{label.pages.home.title}">home</a>
+        </div>
+        <!--<ul class="nav navbar-nav navbar-right">-->
+        <!--<li><a th:href="@{/logout}" th:text="#{label.pages.logout}">logout</a> </li>-->
+        <!--</ul>-->
+    </div>
+</nav>
+
+<div class="container">
+    <div th:if="${param.message != null}" class="alert alert-info" th:text="${param.message[0]}">message</div>
+
+    <!--<h1>This is the landing page for the admin</h1>-->
+
+    <!--<div sec:authorize="hasAuthority('READ_PRIVILEGE')">This text is only visible to a user</div>-->
+    <!---->
+    <!--<div sec:authorize="hasAuthority('WRITE_PRIVILEGE')"> This text is only visible to an admin</div>-->
+
+    <!--<a class="btn btn-default" th:href="@{/admin.html}" th:text="#{label.pages.admin}">admin</a>-->
+    <!--<br/>-->
+    <!--<a class="btn btn-default" th:href="@{/changePassword.html}" th:text="#{message.changePassword}">change password</a>-->
+    <!--<br/>-->
+    <br/>
+    <br/>
+
+    <!--<div th:if="${#authentication.principal.using2FA}">-->
+    <!--You are using Two-step authentication <a href="#" class="btn btn-primary" onclick="disable2FA()">Disable 2FA</a> -->
+    <!--</div>-->
+    <!---->
+    <!--<div th:if="${! #authentication.principal.using2FA}">-->
+    <!--You are not using Two-step authentication <a href="#" class="btn btn-primary" onclick="enable2FA()">Enable 2FA</a> -->
+    <!--</div>-->
+
+    <br/>
+    <div id="qr" style="display:block;">
+        <p>Scan this Barcode using Google Authenticator app on your phone
+            (<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>
+            and
+            <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605">iPhone</a>)
+        </p>
+    </div>
+
+    <form action="/setPass" method="POST" enctype="utf8">
+
+        <div class="form-group row">
+            <label class="col-sm-3" th:text="#{label.form.login2fa}">Google Authenticator Verification Code</label>
+            <span class="col-sm-5">
+            <input class="form-control" type='text' name='code'/></span>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3" th:text="#{label.user.password}">password</label>
+            <span class="col-sm-5">
+                <input id="password" class="form-control" name="password" value="" type="password" required="required"/>
+            </span>
+            <span id="passwordError" class="alert alert-danger col-sm-4" style="display:none"></span>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3" th:text="#{label.user.confirmPass}">confirm</label>
+            <span class="col-sm-5">
+                <input id="matchPassword" class="form-control" name="matchingPassword" value="" type="password" required="required"/>
+            </span>
+            <span id="globalError" class="alert alert-danger col-sm-4" style="display:none"></span>
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary" th:text="#{label.form.submit}">submit</button>
+    </form>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript">
+    function enable2FA() {
+        set2FA(true);
+    }
+
+    function disable2FA() {
+        set2FA(false);
+    }
+
+    function set2FA(use2FA) {
+        $.post("/user/update/2fa", {use2FA: use2FA}, function (data) {
+            if (use2FA) {
+                $("#qr").append('<img src="' + data.message + '" />').show();
+            } else {
+                window.location.reload();
+            }
+        });
+    }
+</script>
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var serverContext = [[@{/}]];
+
+        $(document).ready(function () {
+            /* $('form').submit(function(event) {
+                 register(event);
+            });*/
+
+            $(":password").keyup(function(){
+                if($("#password").val() != $("#matchPassword").val()){
+                    $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+                }else{
+                    $("#globalError").html("").hide();
+                }
+            });
+
+            options = {
+                common: {minChar:8},
+                ui: {
+                    showVerdictsInsideProgressBar:true,
+                    showErrors:true,
+                    errorMessages:{
+                        wordLength: /*[[#{error.wordLength}]]*/,
+                        wordNotEmail: /*[[#{error.wordNotEmail}]]*/,
+                        wordSequences: /*[[#{error.wordSequences}]]*/,
+                        wordLowercase: /*[[#{error.wordLowercase}]]*/,
+                        wordUppercase: /*[[#{error.wordUppercase}]]*/,
+                        wordOneNumber: /*[[#{error.wordOneNumber}]]*/,
+                        wordOneSpecialChar: /*[[#{error.wordOneSpecialChar}]]*/'
+                    }
+                }
+            };
+            $('#password').pwstrength(options);
+        });
+
+        function register(event){
+            event.preventDefault();
+            $(".alert").html("").hide();
+            $(".error-list").html("");
+            if($("#password").val() != $("#matchPassword").val()){
+                $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+                return;
+            }
+            if (typeof grecaptcha !== 'undefined') {
+                var resp = grecaptcha.getResponse();
+                if (resp.length == 0) {
+                    $("#captchaError").show().html("Please verify that you are not a robot.");
+                    return;
+                }
+            }
+            var formData= $('form').serialize();
+            $.post(serverContext + "user/registrationCaptcha",formData ,function(data){
+                if(data.message == "success"){
+                    window.location.href = serverContext + "successRegister.html";
+                }
+
+            })
+                .fail(function(data) {
+                    grecaptcha.reset();
+
+                    if(data.responseJSON.error.indexOf("MailError") > -1)
+                    {
+                        window.location.href = serverContext + "emailError.html";
+                    }
+                    else if(data.responseJSON.error == "InvalidReCaptcha"){
+                        $("#captchaError").show().html(data.responseJSON.message);
+                    }
+                    else if(data.responseJSON.error == "UserAlreadyExist"){
+                        $("#emailError").show().html(data.responseJSON.message);
+                    }
+                    else if(data.responseJSON.error.indexOf("InternalError") > -1){
+                        window.location.href = serverContext + "login?message=" + data.responseJSON.message;
+                    }
+                    else{
+                        var errors = $.parseJSON(data.responseJSON.message);
+                        $.each( errors, function( index,item ){
+                            $("#"+item.field+"Error").show().html(item.defaultMessage);
+                        });
+                        errors = $.parseJSON(data.responseJSON.error);
+                        $.each( errors, function( index,item ){
+                            $("#globalError").show().append(item.defaultMessage+"<br/>");
+                        });
+                    }
+                });
+        }
+        /*]]>*/
+
+        var onReCaptchaSuccess = function(response) {
+            $("#captchaError").html("").hide();
+        };
+
+        var onReCaptchaExpired = function(response) {
+            $("#captchaError").html("reCaptcha has expired.  Please solve a new reCaptcha").show();
+            grecaptcha.reset();
+        };
+</script>
+
+</body>
+
+</html>

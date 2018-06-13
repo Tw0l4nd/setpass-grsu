@@ -30,4 +30,20 @@ public class UserController {
         model.addAttribute("users", userService.getUsersFromSessionRegistry());
         return "users";
     }
+
+    @RequestMapping(value = "/setPass", method = RequestMethod.POST)
+    public String changeUserPass(final Locale locale, final Model model) {
+//        model.addAttribute("users", userService.getUsersFromSessionRegistry());
+        //todo ldap call to new pass + redirect to bad/good
+        return "redirect:/successRegister.html?lang=" + locale.getLanguage();
+    }
+
+    @RequestMapping(value = "/setPass", method = RequestMethod.GET)
+    public String returnPagechangeUserPass(final Locale locale, final Model model) {
+//        model.addAttribute("users", userService.getUsersFromSessionRegistry());
+        //todo ldap call to new pass + redirect to bad/good
+        return "setPass";
+    }
+
+
 }

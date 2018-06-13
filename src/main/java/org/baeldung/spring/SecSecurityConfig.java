@@ -1,6 +1,7 @@
 package org.baeldung.spring;
 
 import org.baeldung.persistence.dao.UserRepository;
+import org.baeldung.security.CheckInDbFilter;
 import org.baeldung.security.CustomRememberMeServices;
 import org.baeldung.security.google2fa.CustomAuthenticationProvider;
 import org.baeldung.security.google2fa.CustomWebAuthenticationDetailsSource;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 
@@ -72,20 +74,20 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login*","/login*", "/logout*", "/signin/**", "/signup/**", "/customLogin",
                         "/user/registration*", "/registrationConfirm*", "/expiredAccount*", "/registration*",
                         "/badUser*", "/user/resendRegistrationToken*" ,"/forgetPassword*", "/user/resetPassword*",
-                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*","/qrcode*").permitAll()
+                        "/user/changePassword*", "/emailError*", "/resources/**","/old/user/registration*","/successRegister*","/qrcode*","/*").permitAll()
                 .antMatchers("/invalidSession*").anonymous()
                 .antMatchers("/user/updatePassword*","/user/savePassword*","/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .anyRequest().hasAuthority("READ_PRIVILEGE")
                 .and()
-            .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/homepage.html")
-                .failureUrl("/login?error=true")
-                .successHandler(myAuthenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
-                .authenticationDetailsSource(authenticationDetailsSource)
-            .permitAll()
-                .and()
+            .httpBasic().disable()
+//                .loginPage("/login")
+//                .defaultSuccessUrl("/homepage.html")
+//                .failureUrl("/login?error=true")
+//                .successHandler(myAuthenticationSuccessHandler)
+//                .failureHandler(authenticationFailureHandler)
+//                .authenticationDetailsSource(authenticationDetailsSource)
+//            .permitAll()
+//                .and()
             .sessionManagement()
                 .invalidSessionUrl("/invalidSession.html")
                 .maximumSessions(1).sessionRegistry(sessionRegistry()).and()
@@ -98,7 +100,11 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
              .and()
-                .rememberMe().rememberMeServices(rememberMeServices()).key("theKey");
+                .rememberMe().rememberMeServices(rememberMeServices()).key("theKey")
+        ;
+//                .and()
+//                .addFilterBefore(new CheckInDbFilter(userDetailsService),
+//                UsernamePasswordAuthenticationFilter.class);
     // @formatter:on
     }
 
