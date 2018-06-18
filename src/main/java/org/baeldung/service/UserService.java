@@ -61,10 +61,12 @@ public class UserService implements IUserService {
     @Override
     public User registerNewUserAccount(final UserDto accountDto) {
         if (emailExist(accountDto.getEmail())) {
-            throw new UserAlreadyExistException("There is an account with that email adress: " + accountDto.getEmail());
+            repository.delete(repository.findByEmail(accountDto.getEmail()));
+//            throw new UserAlreadyExistException("There is an account with that email adress: " + accountDto.getEmail());
+            repository.flush();
         }
         final User user = new User();
-
+        user.setLogin(accountDto.getLogin());
         user.setFirstName(accountDto.getFirstName());
         user.setLastName(accountDto.getLastName());
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));

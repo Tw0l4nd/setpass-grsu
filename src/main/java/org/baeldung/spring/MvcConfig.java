@@ -38,12 +38,12 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         super.addViewControllers(registry);
-        registry.addViewController("/").setViewName("forward:/login");
+        registry.addViewController("/").setViewName("forward:/loginForm");
         registry.addViewController("/login");
         registry.addViewController("/loginRememberMe");
         registry.addViewController("/customLogin");
         registry.addViewController("/registration.html");
-        registry.addViewController("/registrationCaptcha.html");
+        registry.addViewController("/loginForm.html");
         registry.addViewController("/logout.html");
         registry.addViewController("/homepage.html");
         registry.addViewController("/expiredAccount.html");
@@ -55,10 +55,13 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/admin.html");
         registry.addViewController("/successRegister.html");
         registry.addViewController("/forgetPassword.html");
+        registry.addViewController("/successPasswordChange.html");
+        registry.addViewController("/failPasswordChange.html");
         registry.addViewController("/updatePassword.html");
         registry.addViewController("/changePassword.html");
         registry.addViewController("/users.html");
         registry.addViewController("/qrcode.html");
+        registry.addViewController("/badCredentials.html");
     }
 
     @Override

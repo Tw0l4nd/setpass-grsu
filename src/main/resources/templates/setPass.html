@@ -71,6 +71,14 @@
             </span>
             <span id="globalError" class="alert alert-danger col-sm-4" style="display:none"></span>
         </div>
+
+        <div class="form-group row" style="display: none;">
+            <label class="col-sm-3" th:text="#{label.user.confirmPass}">confirm</label>
+            <span class="col-sm-5">
+                <input id="t0ken" name="token" th:value="${param.token[0]}" type="text"/>
+            </span>
+        </div>
+
         <br/>
         <button type="submit" class="btn btn-primary" th:text="#{label.form.submit}">submit</button>
     </form>

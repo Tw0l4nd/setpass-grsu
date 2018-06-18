@@ -1,19 +1,9 @@
 package org.baeldung.persistence.model;
 
-import java.util.Collection;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
 import org.jboss.aerogear.security.otp.api.Base32;
+
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "user_account")
@@ -30,17 +20,13 @@ public class User {
 
     private String email;
 
+    private String login;
+
     @Column(length = 60)
     private String password;
-
     private boolean enabled;
-
     private boolean isUsing2FA;
-
     private String secret;
-
-    //
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
@@ -49,6 +35,16 @@ public class User {
         super();
         this.secret = Base32.random();
         this.enabled = false;
+    }
+
+    //
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public Long getId() {

@@ -17,6 +17,8 @@ public class UserDto {
     @Size(min = 1, message = "{Size.userDto.lastName}")
     private String lastName;
 
+    private String login;
+
     @ValidPassword
     private String password;
 
@@ -87,6 +89,14 @@ public class UserDto {
 
     public void setUsing2FA(boolean isUsing2FA) {
         this.isUsing2FA = isUsing2FA;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     @Override
